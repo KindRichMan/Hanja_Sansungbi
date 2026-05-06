@@ -254,6 +254,79 @@ body.words-hidden .word:not(.bonus) {
   margin: 0 auto 8px;
 }
 
+#introScreen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  width: min(100%, 620px);
+  margin: 0 auto;
+  padding: 12px 0 24px;
+  text-align: left;
+}
+
+#introScreen h1 {
+  margin: 0;
+  color: #ffd400;
+  font-size: clamp(30px, 9vw, 48px);
+  line-height: 1.1;
+  text-align: center;
+}
+
+#introScreen p {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(15px, 4vw, 18px);
+  line-height: 1.55;
+}
+
+.introSection {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.32);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.introSection h3 {
+  margin: 0 0 8px;
+  color: #ffd400;
+  font-size: 18px;
+}
+
+.introSection ul {
+  margin: 0;
+  padding-left: 20px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(14px, 3.8vw, 16px);
+  line-height: 1.55;
+}
+
+#introStartButton {
+  width: min(100%, 260px);
+  margin: 0 auto;
+  background: rgba(255, 212, 0, 0.22);
+  border-color: rgba(255, 212, 0, 0.75);
+}
+
+body:not(.intro-complete):not(.playing):not(.game-over):not(.ranking-visible) h2,
+body:not(.intro-complete):not(.playing):not(.game-over):not(.ranking-visible) #nickname,
+body:not(.intro-complete):not(.playing):not(.game-over):not(.ranking-visible) #status,
+body:not(.intro-complete):not(.playing):not(.game-over):not(.ranking-visible) .bar,
+body:not(.intro-complete):not(.playing):not(.game-over):not(.ranking-visible) #controls,
+body:not(.intro-complete):not(.playing):not(.game-over):not(.ranking-visible) #game,
+body:not(.intro-complete):not(.playing):not(.game-over):not(.ranking-visible) #bonusNotice,
+body:not(.intro-complete):not(.playing):not(.game-over):not(.ranking-visible) #rankingBox {
+  display: none;
+}
+
+body.intro-complete #introScreen,
+body.playing #introScreen,
+body.game-over #introScreen,
+body.ranking-visible #introScreen {
+  display: none;
+}
+
 button,
 select,
 input {
@@ -279,6 +352,7 @@ select {
   position: fixed;
   bottom: env(safe-area-inset-bottom);
   left: 0;
+  display: none;
   width: 100%;
   height: var(--input-h);
   padding: 12px 16px;
@@ -448,6 +522,7 @@ body.playing #game {
 }
 
 body.playing #keyboardInput {
+  display: block;
   bottom: 0;
 }
 
@@ -476,6 +551,30 @@ body.playing #keyboardInput {
 
 <body>
 <div class="container">
+  <section id="introScreen" aria-labelledby="introTitle">
+    <h1 id="introTitle">&#54620;&#51088;&#49457;&#50612; &#48324;&#46629;&#48324;</h1>
+    <p>
+      &#54616;&#45720;&#50640;&#49436; &#45236;&#47140;&#50724;&#45716; &#54620;&#51088;&#49457;&#50612;&#47484; &#48372;&#44256; &#46496;&#50724;&#47476;&#45716; &#46907;&#51012; &#51077;&#47141;&#54616;&#45716; &#48152;&#48373; &#54617;&#49845; &#44172;&#51076;&#51077;&#45768;&#45796;.
+    </p>
+    <div class="introSection">
+      <h3>&#44592;&#45824;&#54952;&#44284;</h3>
+      <ul>
+        <li>&#54620;&#51088;&#49457;&#50612;&#47484; &#48736;&#47476;&#44172; &#48372;&#44256; &#46907;&#51012; &#46496;&#50732;&#47532;&#45716; &#50672;&#49845;&#51012; &#54624; &#49688; &#51080;&#49845;&#45768;&#45796;.</li>
+        <li>&#51228;&#54620; &#49884;&#44036;&#44284; &#45800;&#44228; &#47785;&#54364;&#47196; &#48152;&#48373; &#54617;&#49845;&#51032; &#51665;&#51473;&#46020;&#47484; &#45458;&#51077;&#45768;&#45796;.</li>
+        <li>&#51216;&#49688;&#50752; &#47021;&#53433;&#51004;&#47196; &#54617;&#49845; &#46041;&#44592;&#47484; &#50976;&#51648;&#54624; &#49688; &#51080;&#49845;&#45768;&#45796;.</li>
+      </ul>
+    </div>
+    <div class="introSection">
+      <h3>&#44172;&#51076; &#48169;&#48277;</h3>
+      <ul>
+        <li>&#45769;&#45348;&#51076;&#51012; &#51077;&#47141;&#54616;&#44256; &#49884;&#44036; &#47784;&#46300;&#47484; &#49440;&#53469;&#54633;&#45768;&#45796;.</li>
+        <li>&#45236;&#47140;&#50724;&#45716; &#54620;&#51088;&#49457;&#50612;&#51032; &#46907;&#51012; &#51077;&#47141;&#54616;&#44256; Enter&#47484; &#45572;&#47493;&#45768;&#45796;.</li>
+        <li>&#50640;&#45320;&#51648;&#44032; 0&#51060; &#46104;&#44144;&#45208; 2&#48516; &#47784;&#46300;&#51032; &#49884;&#44036;&#51060; &#45149;&#45208;&#47732; &#44172;&#51076;&#51060; &#51333;&#47308;&#46121;&#45768;&#45796;.</li>
+      </ul>
+    </div>
+    <button id="introStartButton" type="button" onclick="showGameSetup()">&#44172;&#51076; &#49444;&#51221;&#54616;&#44592;</button>
+  </section>
+
   <h2>한자성어 별똥별</h2>
 
   <input id="nickname" placeholder="닉네임" autocomplete="nickname">
@@ -725,6 +824,7 @@ function startTimer() {
 }
 
 window.startGame = async function() {
+  document.body.classList.add("intro-complete");
   nickname = document.getElementById("nickname").value.trim().toLowerCase();
 
   if (!nickname) return alert("닉네임 입력");
@@ -777,6 +877,12 @@ window.startGame = async function() {
 
   document.getElementById("rankingBox").style.display = "none";
   document.getElementById("keyboardInput").focus();
+};
+
+window.showGameSetup = function() {
+  document.body.classList.add("intro-complete");
+  syncViewportHeight();
+  document.getElementById("nickname").focus();
 };
 
 function stopGame() {

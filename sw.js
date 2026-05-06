@@ -1,9 +1,13 @@
-const CACHE_NAME = "hanja-game-v23";
+const CACHE_NAME = "hanja-game-app-v1";
 const ASSETS = [
   "./",
   "./index.html",
   "./firebase.js",
-  "./manifest.webmanifest"
+  "./manifest.webmanifest",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./icons/maskable-icon-192.png",
+  "./icons/maskable-icon-512.png"
 ];
 
 self.addEventListener("install", event => {

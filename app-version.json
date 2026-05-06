@@ -1,0 +1,8 @@
+{
+  "releaseType": "앱버전",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "packageName": "com.kindrichman.hanjasansungbi",
+  "hostingUrl": "https://kindrichman-hanja-game.web.app",
+  "playStoreStatus": "TWA 등록 준비"
+}

@@ -1,8 +1,8 @@
 {
   "releaseType": "앱버전",
-  "versionName": "1.0.2",
-  "versionCode": 3,
+  "versionName": "1.0.3",
+  "versionCode": 4,
   "packageName": "com.kindrichman.hanjasansungbi",
   "hostingUrl": "https://kindrichman-hanja-game.web.app",
-  "playStoreStatus": "보너스 음향과 모바일 입력 화면 고정 개선 후 TWA 등록 준비"
+  "playStoreStatus": "앱 내 버전 표시, 보너스 음향 강화, 모바일 입력 화면 고정 개선 후 TWA 등록 준비"
 }

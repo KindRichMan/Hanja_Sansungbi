@@ -666,6 +666,8 @@ let wordsLoadError = null;
 let isWordsLoading = true;
 let spawnLaneIndex = 0;
 let gameOverButtonAction = "ranking";
+let audioContext = null;
+let speechVoice = null;
 
 const levelSettings = [
   { speed: 0.05, spawnDelay: 4300, clearTarget: 10 },
@@ -732,6 +734,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   updateTimeLabel();
   updateHP();
   updateScore();
+  loadSpeechVoice();
 });
 
 function syncViewportHeight() {
@@ -825,6 +828,7 @@ function startTimer() {
 
 window.startGame = async function() {
   document.body.classList.add("intro-complete");
+  unlockAudio();
   nickname = document.getElementById("nickname").value.trim().toLowerCase();
 
   if (!nickname) return alert("닉네임 입력");
@@ -881,6 +885,7 @@ window.startGame = async function() {
 
 window.showGameSetup = function() {
   document.body.classList.add("intro-complete");
+  unlockAudio();
   syncViewportHeight();
   document.getElementById("nickname").focus();
 };
@@ -891,6 +896,7 @@ function stopGame() {
   clearInterval(timerInterval);
   clearTimeout(bonusNoticeTimer);
   clearTimeout(hiddenWordsTimer);
+  stopSpeech();
   isGameRunning = false;
   isStagePaused = false;
   pendingLevel = null;
@@ -991,12 +997,140 @@ function updateTimeLabel() {
   }
 }
 
+function unlockAudio() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  if (!audioContext) {
+    audioContext = new AudioContextClass();
+  }
+
+  if (audioContext.state === "suspended") {
+    audioContext.resume().catch(() => {});
+  }
+}
+
+function getAudioTime() {
+  unlockAudio();
+  return audioContext ? audioContext.currentTime : 0;
+}
+
+function playTone(frequency, startOffset, duration, type = "sine", peak = 0.12) {
+  if (!audioContext) unlockAudio();
+  if (!audioContext) return;
+
+  const start = audioContext.currentTime + startOffset;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, start);
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(peak, start + 0.018);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start(start);
+  oscillator.stop(start + duration + 0.02);
+}
+
+function playCorrectSound() {
+  getAudioTime();
+  playTone(660, 0, 0.12, "sine", 0.09);
+  playTone(990, 0.08, 0.16, "sine", 0.08);
+}
+
+function playWrongSound() {
+  getAudioTime();
+  playTone(180, 0, 0.16, "sawtooth", 0.11);
+  playTone(120, 0.1, 0.18, "sawtooth", 0.08);
+}
+
+function playMagicSound() {
+  getAudioTime();
+  [740, 988, 1319, 1760].forEach((frequency, index) => {
+    playTone(frequency, index * 0.055, 0.18, "triangle", 0.08);
+  });
+}
+
+function playBombSound() {
+  if (!audioContext) unlockAudio();
+  if (!audioContext) return;
+
+  const start = audioContext.currentTime;
+  const duration = 0.42;
+  const bufferSize = Math.floor(audioContext.sampleRate * duration);
+  const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+  const data = buffer.getChannelData(0);
+
+  for (let i = 0; i < bufferSize; i += 1) {
+    const decay = 1 - i / bufferSize;
+    data[i] = (Math.random() * 2 - 1) * decay * decay;
+  }
+
+  const noise = audioContext.createBufferSource();
+  const noiseGain = audioContext.createGain();
+  const filter = audioContext.createBiquadFilter();
+
+  noise.buffer = buffer;
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(900, start);
+  filter.frequency.exponentialRampToValueAtTime(90, start + duration);
+  noiseGain.gain.setValueAtTime(0.24, start);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  noise.connect(filter);
+  filter.connect(noiseGain);
+  noiseGain.connect(audioContext.destination);
+  noise.start(start);
+  noise.stop(start + duration);
+
+  playTone(80, 0, 0.34, "sine", 0.2);
+}
+
+function loadSpeechVoice() {
+  if (!("speechSynthesis" in window)) return;
+
+  const voices = window.speechSynthesis.getVoices();
+  speechVoice = voices.find(voice => voice.lang === "ko-KR")
+    || voices.find(voice => voice.lang && voice.lang.startsWith("ko"))
+    || null;
+}
+
+if ("speechSynthesis" in window) {
+  window.speechSynthesis.addEventListener("voiceschanged", loadSpeechVoice);
+}
+
+function stopSpeech() {
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function speakHanjaPhrase(text) {
+  if (!text || !("speechSynthesis" in window)) return;
+
+  stopSpeech();
+  loadSpeechVoice();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = speechVoice ? speechVoice.lang : "ko-KR";
+  utterance.voice = speechVoice;
+  utterance.rate = 0.82;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+  window.speechSynthesis.speak(utterance);
+}
+
 function checkAnswer(input) {
   if (isStagePaused) return;
+
+  let matched = false;
+  let matchedHanja = "";
 
   for (let i = activeWords.length - 1; i >= 0; i -= 1) {
     const w = activeWords[i];
     if (w.data.reading === input) {
+      matched = true;
+      matchedHanja = matchedHanja || w.data.hanja;
       score += 10;
       stageCorrectCount += 1;
       combo += 1;
@@ -1008,6 +1142,13 @@ function checkAnswer(input) {
         runBonusEffect();
       }
     }
+  }
+
+  if (matched) {
+    playCorrectSound();
+    speakHanjaPhrase(matchedHanja);
+  } else if (input) {
+    playWrongSound();
   }
 
   updateScore();
@@ -1037,6 +1178,7 @@ function runBonusEffect() {
     updateScore();
     clearWords();
     activeWords = [];
+    playMagicSound();
     playLuckyMeteorEffect();
     showBonusNotice("🍀 행운! 모든 한자가 사라졌어요");
     return;
@@ -1045,12 +1187,14 @@ function runBonusEffect() {
   if (effect === "levelUp") {
     score += 100;
     updateScore();
+    playMagicSound();
     playLuckyMeteorEffect();
     showBonusNotice("🍀 행운! 100점 추가, 다음 단계로 이동");
     showLevelTransition(currentLevel, currentLevel + 1);
     return;
   }
 
+  playBombSound();
   playBombEffect();
   document.body.classList.add("words-hidden");
   clearTimeout(hiddenWordsTimer);

@@ -585,7 +585,7 @@ body.playing #keyboardInput {
       </ul>
     </div>
     <button id="introStartButton" type="button" onclick="showGameSetup()">&#44172;&#51076; &#49444;&#51221;&#54616;&#44592;</button>
-    <span id="appVersionLabel">앱버전 1.0.3</span>
+    <span id="appVersionLabel">앱버전 1.0.4</span>
   </section>
 
   <h2>한자성어 별똥별</h2>
@@ -622,7 +622,7 @@ body.playing #keyboardInput {
 
     <button onclick="startGame()">START</button>
     <button onclick="resetGame()">RESET</button>
-    <span id="setupVersionLabel">앱버전 1.0.3</span>
+    <span id="setupVersionLabel">앱버전 1.0.4</span>
   </div>
 
   <div id="game">
@@ -1094,6 +1094,26 @@ function playTone(frequency, startOffset, duration, type = "sine", peak = 0.12) 
   oscillator.stop(start + duration + 0.02);
 }
 
+function playSlideTone(startFrequency, endFrequency, startOffset, duration, type = "sine", peak = 0.18) {
+  if (!audioContext) unlockAudio();
+  if (!audioContext) return;
+
+  const start = audioContext.currentTime + startOffset;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(startFrequency, start);
+  oscillator.frequency.exponentialRampToValueAtTime(endFrequency, start + duration);
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(peak, start + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start(start);
+  oscillator.stop(start + duration + 0.02);
+}
+
 function playCorrectSound() {
   getAudioTime();
   playTone(660, 0, 0.12, "sine", 0.09);
@@ -1123,7 +1143,7 @@ function playBombSound() {
   if (!audioContext) return;
 
   const start = audioContext.currentTime;
-  const duration = 0.72;
+  const duration = 0.9;
   const bufferSize = Math.floor(audioContext.sampleRate * duration);
   const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
   const data = buffer.getChannelData(0);
@@ -1139,9 +1159,9 @@ function playBombSound() {
 
   noise.buffer = buffer;
   filter.type = "lowpass";
-  filter.frequency.setValueAtTime(1400, start);
-  filter.frequency.exponentialRampToValueAtTime(70, start + duration);
-  noiseGain.gain.setValueAtTime(0.68, start);
+  filter.frequency.setValueAtTime(3200, start);
+  filter.frequency.exponentialRampToValueAtTime(160, start + duration);
+  noiseGain.gain.setValueAtTime(0.9, start);
   noiseGain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
   noise.connect(filter);
   filter.connect(noiseGain);
@@ -1149,11 +1169,14 @@ function playBombSound() {
   noise.start(start);
   noise.stop(start + duration);
 
-  playTone(70, 0, 0.46, "sine", 0.55);
-  playTone(45, 0.08, 0.58, "sawtooth", 0.24);
+  playTone(1500, 0, 0.08, "square", 0.42);
+  playTone(900, 0.045, 0.1, "square", 0.32);
+  playSlideTone(520, 95, 0.08, 0.62, "sawtooth", 0.5);
+  playSlideTone(180, 55, 0.02, 0.76, "triangle", 0.55);
+  playTone(260, 0.18, 0.16, "square", 0.28);
 
   if ("vibrate" in navigator) {
-    navigator.vibrate([90, 45, 160]);
+    navigator.vibrate([120, 50, 220]);
   }
 }
 

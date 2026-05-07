@@ -350,7 +350,7 @@ select {
 
 #keyboardInput {
   position: fixed;
-  bottom: env(safe-area-inset-bottom);
+  bottom: max(env(safe-area-inset-bottom), env(keyboard-inset-height, 0px));
   left: 0;
   display: none;
   width: 100%;
@@ -467,7 +467,7 @@ body.playing .container {
   top: 0;
   left: 0;
   right: 0;
-  bottom: calc(var(--input-h) + env(safe-area-inset-bottom));
+  bottom: calc(var(--input-h) + max(env(safe-area-inset-bottom), env(keyboard-inset-height, 0px)));
   max-width: none;
   width: 100%;
   height: auto;
@@ -523,7 +523,7 @@ body.playing #game {
 
 body.playing #keyboardInput {
   display: block;
-  bottom: 0;
+  bottom: env(keyboard-inset-height, 0px);
 }
 
 @media (min-width: 768px) {
@@ -689,13 +689,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const levelSelect = document.getElementById("level");
 
   if ("virtualKeyboard" in navigator) {
-    navigator.virtualKeyboard.overlaysContent = false;
+    navigator.virtualKeyboard.overlaysContent = true;
   }
 
   input.addEventListener("keydown", e => {
     if (e.key === "Enter") {
+      unlockAudio();
       checkAnswer(e.target.value.trim());
       e.target.value = "";
+      lockGameScrollRepeatedly();
     }
   });
 
@@ -703,10 +705,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("gameOverOkButton").addEventListener("click", handleGameOverModalButton);
 
   input.addEventListener("focus", () => {
-    setTimeout(() => {
-      syncViewportHeight();
-      lockGameScroll();
-    }, 260);
+    lockGameScrollRepeatedly();
   });
 
   if ("serviceWorker" in navigator) {
@@ -749,6 +748,29 @@ function lockGameScroll() {
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
+}
+
+function lockGameScrollRepeatedly() {
+  lockGameScroll();
+  [60, 180, 320, 520].forEach(delay => {
+    setTimeout(() => {
+      syncViewportHeight();
+      lockGameScroll();
+    }, delay);
+  });
+}
+
+function focusGameInput() {
+  const input = document.getElementById("keyboardInput");
+  if (!input) return;
+
+  try {
+    input.focus({ preventScroll: true });
+  } catch (err) {
+    input.focus();
+  }
+
+  lockGameScrollRepeatedly();
 }
 
 window.addEventListener("resize", syncViewportHeight);
@@ -880,7 +902,7 @@ window.startGame = async function() {
   gameInterval = setInterval(update, 20);
 
   document.getElementById("rankingBox").style.display = "none";
-  document.getElementById("keyboardInput").focus();
+  focusGameInput();
 };
 
 window.showGameSetup = function() {
@@ -1049,7 +1071,7 @@ function playWrongSound() {
 function playMagicSound() {
   getAudioTime();
   [740, 988, 1319, 1760].forEach((frequency, index) => {
-    playTone(frequency, index * 0.055, 0.18, "triangle", 0.08);
+    playTone(frequency, index * 0.07, 0.24, "triangle", 0.16);
   });
 }
 
@@ -1076,7 +1098,7 @@ function playBombSound() {
   filter.type = "lowpass";
   filter.frequency.setValueAtTime(900, start);
   filter.frequency.exponentialRampToValueAtTime(90, start + duration);
-  noiseGain.gain.setValueAtTime(0.24, start);
+  noiseGain.gain.setValueAtTime(0.42, start);
   noiseGain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
   noise.connect(filter);
   filter.connect(noiseGain);
@@ -1084,7 +1106,7 @@ function playBombSound() {
   noise.start(start);
   noise.stop(start + duration);
 
-  playTone(80, 0, 0.34, "sine", 0.2);
+  playTone(80, 0, 0.34, "sine", 0.34);
 }
 
 function loadSpeechVoice() {
@@ -1120,17 +1142,29 @@ function speakHanjaPhrase(text) {
   window.speechSynthesis.speak(utterance);
 }
 
+function speakHanjaPhraseAfter(text, delay = 0) {
+  if (!text) return;
+
+  setTimeout(() => {
+    if (isGameRunning || isStagePaused) {
+      speakHanjaPhrase(text);
+    }
+  }, delay);
+}
+
 function checkAnswer(input) {
   if (isStagePaused) return;
 
   let matched = false;
   let matchedHanja = "";
+  let matchedBonus = false;
 
   for (let i = activeWords.length - 1; i >= 0; i -= 1) {
     const w = activeWords[i];
     if (w.data.reading === input) {
       matched = true;
       matchedHanja = matchedHanja || w.data.hanja;
+      matchedBonus = matchedBonus || w.isBonus;
       score += 10;
       stageCorrectCount += 1;
       combo += 1;
@@ -1145,8 +1179,12 @@ function checkAnswer(input) {
   }
 
   if (matched) {
-    playCorrectSound();
-    speakHanjaPhrase(matchedHanja);
+    if (matchedBonus) {
+      speakHanjaPhraseAfter(matchedHanja, 650);
+    } else {
+      playCorrectSound();
+      speakHanjaPhraseAfter(matchedHanja, 120);
+    }
   } else if (input) {
     playWrongSound();
   }
@@ -1272,7 +1310,7 @@ function startPendingLevel() {
   spawnWord();
   spawnInterval = setInterval(spawnWord, getLevelSettings(currentLevel).spawnDelay);
   gameInterval = setInterval(update, 20);
-  document.getElementById("keyboardInput").focus();
+  focusGameInput();
 }
 
 function showBonusNotice(message) {

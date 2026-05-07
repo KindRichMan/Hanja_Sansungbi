@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanja-game-app-v2";
+const CACHE_NAME = "hanja-game-app-v3";
 const ASSETS = [
   "./",
   "./index.html",

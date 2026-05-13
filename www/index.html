@@ -15,7 +15,6 @@
   --text: #fff;
   --vvh: 100dvh;
   --input-h: 62px;
-  --keyboard-h: env(keyboard-inset-height, 0px);
 }
 
 * { box-sizing: border-box; }
@@ -361,17 +360,22 @@ select {
 
 #keyboardInput {
   position: fixed;
-  bottom: max(env(safe-area-inset-bottom), var(--keyboard-h));
+  bottom: env(safe-area-inset-bottom);
   left: 0;
   display: none;
   width: 100%;
   height: var(--input-h);
   padding: 12px 16px;
   font-size: 16px;
+  line-height: 1.4;
+  background: #fff;
+  color: #111;
   border: none;
   border-top: 2px solid rgba(255, 255, 255, 0.4);
   outline: none;
   z-index: 999;
+  -webkit-text-fill-color: #111;
+  caret-color: #111;
 }
 
 #nickname {
@@ -471,7 +475,6 @@ body.playing {
     linear-gradient(180deg, #020617, #0f1b3d);
   padding: 0;
   overflow: hidden;
-  touch-action: none;
 }
 
 body.playing .container {
@@ -479,7 +482,7 @@ body.playing .container {
   top: 0;
   left: 0;
   right: 0;
-  bottom: calc(var(--input-h) + max(env(safe-area-inset-bottom), var(--keyboard-h)));
+  bottom: calc(var(--input-h) + env(safe-area-inset-bottom));
   max-width: none;
   width: 100%;
   height: auto;
@@ -535,7 +538,7 @@ body.playing #game {
 
 body.playing #keyboardInput {
   display: block;
-  bottom: var(--keyboard-h);
+  bottom: env(safe-area-inset-bottom);
 }
 
 @media (min-width: 768px) {
@@ -585,7 +588,7 @@ body.playing #keyboardInput {
       </ul>
     </div>
     <button id="introStartButton" type="button" onclick="showGameSetup()">&#44172;&#51076; &#49444;&#51221;&#54616;&#44592;</button>
-    <span id="appVersionLabel">앱버전 1.0.6</span>
+    <span id="appVersionLabel">앱버전 1.0.7</span>
   </section>
 
   <h2>한자성어 별똥별</h2>
@@ -622,7 +625,7 @@ body.playing #keyboardInput {
 
     <button onclick="startGame()">START</button>
     <button onclick="resetGame()">RESET</button>
-    <span id="setupVersionLabel">앱버전 1.0.6</span>
+    <span id="setupVersionLabel">앱버전 1.0.7</span>
   </div>
 
   <div id="game">
@@ -682,7 +685,6 @@ let spawnLaneIndex = 0;
 let gameOverButtonAction = "ranking";
 let audioContext = null;
 let speechVoice = null;
-let lockedPlayingHeight = 0;
 
 const levelSettings = [
   { speed: 0.05, spawnDelay: 4300, clearTarget: 10 },
@@ -704,7 +706,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const levelSelect = document.getElementById("level");
 
   if ("virtualKeyboard" in navigator) {
-    navigator.virtualKeyboard.overlaysContent = true;
+    navigator.virtualKeyboard.overlaysContent = false;
   }
 
   input.addEventListener("keydown", e => {
@@ -712,22 +714,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       unlockAudio();
       checkAnswer(e.target.value.trim());
       e.target.value = "";
-      lockGameScrollRepeatedly();
     }
   });
 
   document.getElementById("levelStartButton").addEventListener("click", startPendingLevel);
   document.getElementById("gameOverOkButton").addEventListener("click", handleGameOverModalButton);
-
-  input.addEventListener("focus", () => {
-    lockGameScrollRepeatedly();
-  });
-
-  document.addEventListener("touchmove", e => {
-    if (document.body.classList.contains("playing")) {
-      e.preventDefault();
-    }
-  }, { passive: false });
 
   if ("serviceWorker" in navigator) {
     try {
@@ -759,23 +750,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function syncViewportHeight() {
   const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  const h = document.body.classList.contains("playing") && lockedPlayingHeight
-    ? lockedPlayingHeight
-    : viewportHeight;
-
-  document.documentElement.style.setProperty("--vvh", `${h}px`);
+  document.documentElement.style.setProperty("--vvh", `${viewportHeight}px`);
   lockGameScroll();
-}
-
-function lockPlayingViewportHeight() {
-  const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  lockedPlayingHeight = Math.max(window.innerHeight || 0, viewportHeight || 0, document.documentElement.clientHeight || 0);
-  document.documentElement.style.setProperty("--vvh", `${lockedPlayingHeight}px`);
-}
-
-function unlockPlayingViewportHeight() {
-  lockedPlayingHeight = 0;
-  syncViewportHeight();
 }
 
 function lockGameScroll() {
@@ -784,16 +760,6 @@ function lockGameScroll() {
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
-}
-
-function lockGameScrollRepeatedly() {
-  lockGameScroll();
-  [60, 180, 320, 520].forEach(delay => {
-    setTimeout(() => {
-      syncViewportHeight();
-      lockGameScroll();
-    }, delay);
-  });
 }
 
 function focusGameInput() {
@@ -805,8 +771,7 @@ function focusGameInput() {
   } catch (err) {
     input.focus();
   }
-
-  lockGameScrollRepeatedly();
+  lockGameScroll();
 }
 
 window.addEventListener("resize", syncViewportHeight);
@@ -932,7 +897,6 @@ window.startGame = async function() {
 
   startTimer();
 
-  lockPlayingViewportHeight();
   document.body.classList.add("playing");
   syncViewportHeight();
   spawnWord();
@@ -959,7 +923,6 @@ function stopGame() {
   isGameRunning = false;
   isStagePaused = false;
   pendingLevel = null;
-  unlockPlayingViewportHeight();
   document.body.classList.remove("words-hidden");
   document.getElementById("levelModal").style.display = "none";
 }

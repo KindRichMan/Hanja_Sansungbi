@@ -360,7 +360,7 @@ select {
 
 #keyboardInput {
   position: fixed;
-  bottom: env(safe-area-inset-bottom);
+  top: env(safe-area-inset-top);
   left: 0;
   display: none;
   width: 100%;
@@ -479,10 +479,10 @@ body.playing {
 
 body.playing .container {
   position: fixed;
-  top: 0;
+  top: calc(var(--input-h) + env(safe-area-inset-top));
   left: 0;
   right: 0;
-  bottom: calc(var(--input-h) + env(safe-area-inset-bottom));
+  bottom: 0;
   max-width: none;
   width: 100%;
   height: auto;
@@ -538,7 +538,7 @@ body.playing #game {
 
 body.playing #keyboardInput {
   display: block;
-  bottom: env(safe-area-inset-bottom);
+  top: env(safe-area-inset-top);
 }
 
 @media (min-width: 768px) {
@@ -588,7 +588,7 @@ body.playing #keyboardInput {
       </ul>
     </div>
     <button id="introStartButton" type="button" onclick="showGameSetup()">&#44172;&#51076; &#49444;&#51221;&#54616;&#44592;</button>
-    <span id="appVersionLabel">앱버전 1.0.8</span>
+    <span id="appVersionLabel">앱버전 1.0.9</span>
   </section>
 
   <h2>한자성어 별똥별</h2>
@@ -625,7 +625,7 @@ body.playing #keyboardInput {
 
     <button onclick="startGame()">START</button>
     <button onclick="resetGame()">RESET</button>
-    <span id="setupVersionLabel">앱버전 1.0.8</span>
+    <span id="setupVersionLabel">앱버전 1.0.9</span>
   </div>
 
   <div id="game">
@@ -685,7 +685,6 @@ let spawnLaneIndex = 0;
 let gameOverButtonAction = "ranking";
 let audioContext = null;
 let speechVoice = null;
-let playingViewportHeight = 0;
 
 const levelSettings = [
   { speed: 0.05, spawnDelay: 4300, clearTarget: 10 },
@@ -751,23 +750,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function syncViewportHeight() {
   const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  const height = document.body.classList.contains("playing") && playingViewportHeight
-    ? playingViewportHeight
-    : viewportHeight;
-
-  document.documentElement.style.setProperty("--vvh", `${height}px`);
+  document.documentElement.style.setProperty("--vvh", `${viewportHeight}px`);
   lockGameScroll();
-}
-
-function setPlayingViewportHeight() {
-  const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  playingViewportHeight = Math.max(window.innerHeight || 0, viewportHeight || 0, document.documentElement.clientHeight || 0);
-  document.documentElement.style.setProperty("--vvh", `${playingViewportHeight}px`);
-}
-
-function clearPlayingViewportHeight() {
-  playingViewportHeight = 0;
-  syncViewportHeight();
 }
 
 function lockGameScroll() {
@@ -913,7 +897,6 @@ window.startGame = async function() {
 
   startTimer();
 
-  setPlayingViewportHeight();
   document.body.classList.add("playing");
   syncViewportHeight();
   spawnWord();
@@ -940,7 +923,6 @@ function stopGame() {
   isGameRunning = false;
   isStagePaused = false;
   pendingLevel = null;
-  clearPlayingViewportHeight();
   document.body.classList.remove("words-hidden");
   document.getElementById("levelModal").style.display = "none";
 }

@@ -1,8 +1,8 @@
 {
   "releaseType": "앱버전",
-  "versionName": "1.0.8",
-  "versionCode": 9,
+  "versionName": "1.0.9",
+  "versionCode": 10,
   "packageName": "com.kindrichman.hanjasansungbi",
   "hostingUrl": "https://kindrichman-hanja-game.web.app",
-  "playStoreStatus": "Capacitor Android 키보드 표시 중 게임 화면 유지 개선"
+  "playStoreStatus": "Capacitor Android 입력창 상단 배치와 키보드 resize 개선"
 }

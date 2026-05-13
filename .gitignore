@@ -65,5 +65,11 @@ node_modules/
 # dotenv environment variables file
 .env
 
+# Android signing keys
+*.jks
+*.keystore
+android/keystore.properties
+android/app/upload-keystore.jks
+
 # dataconnect generated files
 .dataconnect

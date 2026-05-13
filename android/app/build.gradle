@@ -7,10 +7,10 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.kindrichman.hanjasansungbi"
+    namespace "com.kindrich.hanja"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.kindrichman.hanjasansungbi"
+        applicationId "com.kindrich.hanja"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 11

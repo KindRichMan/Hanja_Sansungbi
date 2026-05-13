@@ -1,6 +1,6 @@
-{
-  "appId": "com.kindrichman.hanjasansungbi",
-  "appName": "한자성어 별똥별",
+﻿{
+  "appId": "com.kindrich.hanja",
+  "appName": "?쒖옄?깆뼱 蹂꾨삦蹂?,
   "webDir": "www",
   "server": {
     "androidScheme": "https"
@@ -12,3 +12,5 @@
     "webContentsDebuggingEnabled": true
   }
 }
+
+

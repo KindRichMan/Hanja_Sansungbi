@@ -1,4 +1,4 @@
-package com.kindrichman.hanjasansungbi;
+package com.kindrich.hanja;
 
 import com.getcapacitor.BridgeActivity;
 

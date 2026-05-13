@@ -1,8 +1,8 @@
-{
-  "packageId": "com.kindrichman.hanjasansungbi",
+﻿{
+  "packageId": "com.kindrich.hanja",
   "host": "kindrichman-hanja-game.web.app",
-  "name": "한자성어 별똥별",
-  "launcherName": "한자별똥별",
+  "name": "?쒖옄?깆뼱 蹂꾨삦蹂?,
+  "launcherName": "?쒖옄蹂꾨삦蹂?,
   "display": "standalone",
   "themeColor": "#020617",
   "themeColorDark": "#020617",
@@ -22,3 +22,5 @@
   "fallbackType": "customtabs",
   "shortcuts": []
 }
+
+

@@ -1,49 +1,45 @@
-# 한자성어 별똥별 Play 스토어 등록 절차
+﻿# ?쒖옄?깆뼱 蹂꾨삦蹂?Play ?ㅽ넗???깅줉 ?덉감
 
-## 앱 버전 정보
+## ??踰꾩쟾 ?뺣낫
 
-- 앱 버전 구분: 앱버전
-- 앱 이름: 한자성어 별똥별
-- 패키지명: `com.kindrichman.hanjasansungbi`
-- 버전 이름: `1.0.6`
-- 버전 코드: `7`
-- 웹앱 주소: `https://kindrichman-hanja-game.web.app`
-- Android 래핑 방식: Capacitor Android WebView
+- ??踰꾩쟾 援щ텇: ?깅쾭??- ???대쫫: ?쒖옄?깆뼱 蹂꾨삦蹂?- ?⑦궎吏紐? `com.kindrich.hanja`
+- 踰꾩쟾 ?대쫫: `1.0.6`
+- 踰꾩쟾 肄붾뱶: `7`
+- ?뱀빋 二쇱냼: `https://kindrichman-hanja-game.web.app`
+- Android ?섑븨 諛⑹떇: Capacitor Android WebView
 
-## Android 앱 번들 만들기
-
-1. Android Studio를 설치하고 SDK Manager에서 Android SDK를 설치합니다.
-2. SDK 경로를 `android/local.properties`에 설정합니다.
+## Android ??踰덈뱾 留뚮뱾湲?
+1. Android Studio瑜??ㅼ튂?섍퀬 SDK Manager?먯꽌 Android SDK瑜??ㅼ튂?⑸땲??
+2. SDK 寃쎈줈瑜?`android/local.properties`???ㅼ젙?⑸땲??
 
 ```powershell
 sdk.dir=C\:\\Users\\USER\\AppData\\Local\\Android\\Sdk
 ```
 
-3. Node 패키지를 설치하고 Capacitor 웹 자산을 동기화합니다.
+3. Node ?⑦궎吏瑜??ㅼ튂?섍퀬 Capacitor ???먯궛???숆린?뷀빀?덈떎.
 
 ```powershell
 npm.cmd install
 npm.cmd run cap:sync
 ```
 
-4. Android App Bundle을 빌드합니다.
+4. Android App Bundle??鍮뚮뱶?⑸땲??
 
 ```powershell
 cd android
 .\gradlew.bat bundleRelease
 ```
 
-5. 결과 파일은 보통 아래 경로에 생성됩니다.
+5. 寃곌낵 ?뚯씪? 蹂댄넻 ?꾨옒 寃쎈줈???앹꽦?⑸땲??
 
 ```powershell
 android\app\build\outputs\bundle\release\app-release.aab
 ```
 
-6. Play 스토어에는 APK보다 Android App Bundle 파일인 `.aab`를 업로드합니다.
+6. Play ?ㅽ넗?댁뿉??APK蹂대떎 Android App Bundle ?뚯씪??`.aab`瑜??낅줈?쒗빀?덈떎.
 
-## 설치 테스트
-
-Play Console 업로드 전 휴대폰에서 직접 설치하려면 debug APK를 빌드합니다.
+## ?ㅼ튂 ?뚯뒪??
+Play Console ?낅줈?????대??곗뿉??吏곸젒 ?ㅼ튂?섎젮硫?debug APK瑜?鍮뚮뱶?⑸땲??
 
 ```powershell
 cd android
@@ -51,24 +47,26 @@ cd android
 adb install app\build\outputs\apk\debug\app-debug.apk
 ```
 
-## Digital Asset Links 설정
+## Digital Asset Links ?ㅼ젙
 
-현재 앱은 Capacitor WebView 방식이므로 TWA처럼 Digital Asset Links가 필수는 아닙니다.
-다만 향후 TWA 방식으로 되돌리거나 웹-앱 소유권 연결이 필요하면 `play-store/assetlinks.template.json`을 사용할 수 있습니다.
+?꾩옱 ?깆? Capacitor WebView 諛⑹떇?대?濡?TWA泥섎읆 Digital Asset Links媛 ?꾩닔???꾨떃?덈떎.
+?ㅻ쭔 ?ν썑 TWA 諛⑹떇?쇰줈 ?섎룎由ш굅???????뚯쑀沅??곌껐???꾩슂?섎㈃ `play-store/assetlinks.template.json`???ъ슜?????덉뒿?덈떎.
 
-## Play Console 등록 순서
+## Play Console ?깅줉 ?쒖꽌
 
-1. Google Play Console 개발자 계정을 준비합니다.
-2. `앱 만들기`에서 앱 이름, 기본 언어, 앱/게임 여부, 무료/유료 여부를 입력합니다.
-3. 앱 액세스, 광고 포함 여부, 콘텐츠 등급, 타겟층, 데이터 보안, 개인정보처리방침 URL을 입력합니다.
-4. 스토어 등록정보에 앱 설명, 아이콘, 그래픽 이미지, 스크린샷을 등록합니다.
-5. `테스트 및 출시 > 내부 테스트`에서 새 버전을 만들고 `.aab` 파일을 업로드합니다.
-6. 내부 테스트로 설치 확인 후, closed/open 테스트 또는 프로덕션으로 승격합니다.
+1. Google Play Console 媛쒕컻??怨꾩젙??以鍮꾪빀?덈떎.
+2. `??留뚮뱾湲??먯꽌 ???대쫫, 湲곕낯 ?몄뼱, ??寃뚯엫 ?щ?, 臾대즺/?좊즺 ?щ?瑜??낅젰?⑸땲??
+3. ???≪꽭?? 愿묎퀬 ?ы븿 ?щ?, 肄섑뀗痢??깃툒, ?寃잛링, ?곗씠??蹂댁븞, 媛쒖씤?뺣낫泥섎━諛⑹묠 URL???낅젰?⑸땲??
+4. ?ㅽ넗???깅줉?뺣낫?????ㅻ챸, ?꾩씠肄? 洹몃옒???대?吏, ?ㅽ겕由곗꺑???깅줉?⑸땲??
+5. `?뚯뒪??諛?異쒖떆 > ?대? ?뚯뒪???먯꽌 ??踰꾩쟾??留뚮뱾怨?`.aab` ?뚯씪???낅줈?쒗빀?덈떎.
+6. ?대? ?뚯뒪?몃줈 ?ㅼ튂 ?뺤씤 ?? closed/open ?뚯뒪???먮뒗 ?꾨줈?뺤뀡?쇰줈 ?밴꺽?⑸땲??
 
-## 업데이트 규칙
+## ?낅뜲?댄듃 洹쒖튃
 
-- 웹만 바뀌는 경우: Firebase Hosting 배포와 GitHub 커밋만 진행합니다.
-- Android 래퍼가 바뀌는 경우: `versionCode`를 반드시 1씩 올립니다.
-- Play Console에 새 `.aab`를 올릴 때마다 이전보다 큰 `versionCode`가 필요합니다.
-- GitHub 커밋 메시지는 `앱버전: ...` 형식으로 남깁니다.
-- 앱 버전 태그는 `app-v1.0.6` 형식으로 남깁니다.
+- ?밸쭔 諛붾뚮뒗 寃쎌슦: Firebase Hosting 諛고룷? GitHub 而ㅻ컠留?吏꾪뻾?⑸땲??
+- Android ?섑띁媛 諛붾뚮뒗 寃쎌슦: `versionCode`瑜?諛섎뱶??1???щ┰?덈떎.
+- Play Console????`.aab`瑜??щ┫ ?뚮쭏???댁쟾蹂대떎 ??`versionCode`媛 ?꾩슂?⑸땲??
+- GitHub 而ㅻ컠 硫붿떆吏??`?깅쾭?? ...` ?뺤떇?쇰줈 ?④퉩?덈떎.
+- ??踰꾩쟾 ?쒓렇??`app-v1.0.6` ?뺤떇?쇰줈 ?④퉩?덈떎.
+
+

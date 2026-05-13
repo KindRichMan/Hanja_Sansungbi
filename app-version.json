@@ -1,8 +1,10 @@
-{
-  "releaseType": "앱버전",
+﻿{
+  "releaseType": "?깅쾭??,
   "versionName": "1.0.10",
   "versionCode": 11,
-  "packageName": "com.kindrichman.hanjasansungbi",
+  "packageName": "com.kindrich.hanja",
   "hostingUrl": "https://kindrichman-hanja-game.web.app",
-  "playStoreStatus": "Capacitor Android 키보드 위 감점선과 점수 표시 개선"
+  "playStoreStatus": "Capacitor Android ?ㅻ낫????媛먯젏?좉낵 ?먯닔 ?쒖떆 媛쒖꽑"
 }
+
+

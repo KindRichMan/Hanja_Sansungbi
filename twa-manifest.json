@@ -16,8 +16,8 @@
   "iconUrl": "https://kindrichman-hanja-game.web.app/icons/icon-512.png",
   "maskableIconUrl": "https://kindrichman-hanja-game.web.app/icons/maskable-icon-512.png",
   "splashScreenFadeOutDuration": 300,
-  "appVersionName": "1.0.9",
-  "appVersionCode": 10,
+  "appVersionName": "1.0.10",
+  "appVersionCode": 11,
   "webManifestUrl": "https://kindrichman-hanja-game.web.app/manifest.webmanifest",
   "fallbackType": "customtabs",
   "shortcuts": []

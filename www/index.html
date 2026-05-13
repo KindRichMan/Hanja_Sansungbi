@@ -15,6 +15,7 @@
   --text: #fff;
   --vvh: 100dvh;
   --input-h: 62px;
+  --keyboard-offset: 0px;
 }
 
 * { box-sizing: border-box; }
@@ -81,7 +82,7 @@ h2 {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 34px;
+  bottom: calc(var(--keyboard-offset) + 34px);
   z-index: 2;
   height: 2px;
   background: rgba(255, 80, 80, 0.92);
@@ -500,7 +501,7 @@ body.playing #status {
   position: absolute;
   left: 8px;
   right: 8px;
-  bottom: 8px;
+  bottom: calc(var(--keyboard-offset) + 8px);
   z-index: 20;
   display: flex;
   justify-content: center;
@@ -588,7 +589,7 @@ body.playing #keyboardInput {
       </ul>
     </div>
     <button id="introStartButton" type="button" onclick="showGameSetup()">&#44172;&#51076; &#49444;&#51221;&#54616;&#44592;</button>
-    <span id="appVersionLabel">앱버전 1.0.9</span>
+    <span id="appVersionLabel">앱버전 1.0.10</span>
   </section>
 
   <h2>한자성어 별똥별</h2>
@@ -625,7 +626,7 @@ body.playing #keyboardInput {
 
     <button onclick="startGame()">START</button>
     <button onclick="resetGame()">RESET</button>
-    <span id="setupVersionLabel">앱버전 1.0.9</span>
+    <span id="setupVersionLabel">앱버전 1.0.10</span>
   </div>
 
   <div id="game">
@@ -685,6 +686,7 @@ let spawnLaneIndex = 0;
 let gameOverButtonAction = "ranking";
 let audioContext = null;
 let speechVoice = null;
+let keyboardOffsetTimer = null;
 
 const levelSettings = [
   { speed: 0.05, spawnDelay: 4300, clearTarget: 10 },
@@ -714,7 +716,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       unlockAudio();
       checkAnswer(e.target.value.trim());
       e.target.value = "";
+      updateKeyboardOffset(true);
     }
+  });
+
+  input.addEventListener("focus", () => {
+    updateKeyboardOffset(true);
+    clearTimeout(keyboardOffsetTimer);
+    keyboardOffsetTimer = setTimeout(() => updateKeyboardOffset(true), 280);
+  });
+
+  input.addEventListener("blur", () => {
+    clearTimeout(keyboardOffsetTimer);
+    setKeyboardOffset(0);
   });
 
   document.getElementById("levelStartButton").addEventListener("click", startPendingLevel);
@@ -751,7 +765,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 function syncViewportHeight() {
   const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
   document.documentElement.style.setProperty("--vvh", `${viewportHeight}px`);
+  updateKeyboardOffset(document.activeElement === document.getElementById("keyboardInput"));
   lockGameScroll();
+}
+
+function setKeyboardOffset(offset) {
+  document.documentElement.style.setProperty("--keyboard-offset", `${Math.max(0, Math.round(offset))}px`);
+}
+
+function updateKeyboardOffset(useFallback = false) {
+  if (!document.body.classList.contains("playing")) {
+    setKeyboardOffset(0);
+    return;
+  }
+
+  let offset = 0;
+  if (window.visualViewport) {
+    offset = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
+  }
+
+  if (useFallback && offset < 80) {
+    offset = Math.min(360, Math.max(250, window.innerHeight * 0.38));
+  }
+
+  setKeyboardOffset(offset);
 }
 
 function lockGameScroll() {
@@ -772,6 +809,7 @@ function focusGameInput() {
     input.focus();
   }
   lockGameScroll();
+  updateKeyboardOffset(true);
 }
 
 window.addEventListener("resize", syncViewportHeight);
@@ -919,6 +957,8 @@ function stopGame() {
   clearInterval(timerInterval);
   clearTimeout(bonusNoticeTimer);
   clearTimeout(hiddenWordsTimer);
+  clearTimeout(keyboardOffsetTimer);
+  setKeyboardOffset(0);
   stopSpeech();
   isGameRunning = false;
   isStagePaused = false;

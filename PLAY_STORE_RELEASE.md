@@ -5,8 +5,8 @@
 - 앱 버전 구분: 앱버전
 - 앱 이름: 한자성어 별똥별
 - 패키지명: `com.kindrichman.hanjasansungbi`
-- 버전 이름: `1.0.5`
-- 버전 코드: `6`
+- 버전 이름: `1.0.6`
+- 버전 코드: `7`
 - 웹앱 주소: `https://kindrichman-hanja-game.web.app`
 - Android 래핑 방식: Capacitor Android WebView
 
@@ -71,4 +71,4 @@ adb install app\build\outputs\apk\debug\app-debug.apk
 - Android 래퍼가 바뀌는 경우: `versionCode`를 반드시 1씩 올립니다.
 - Play Console에 새 `.aab`를 올릴 때마다 이전보다 큰 `versionCode`가 필요합니다.
 - GitHub 커밋 메시지는 `앱버전: ...` 형식으로 남깁니다.
-- 앱 버전 태그는 `app-v1.0.5` 형식으로 남깁니다.
+- 앱 버전 태그는 `app-v1.0.6` 형식으로 남깁니다.

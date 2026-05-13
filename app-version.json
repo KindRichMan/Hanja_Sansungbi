@@ -1,8 +1,8 @@
 {
   "releaseType": "앱버전",
-  "versionName": "1.0.5",
-  "versionCode": 6,
+  "versionName": "1.0.6",
+  "versionCode": 7,
   "packageName": "com.kindrichman.hanjasansungbi",
   "hostingUrl": "https://kindrichman-hanja-game.web.app",
-  "playStoreStatus": "Capacitor Android 전환 준비"
+  "playStoreStatus": "Capacitor Android 전환 및 Firebase Hosting 배포 제외 설정 완료"
 }

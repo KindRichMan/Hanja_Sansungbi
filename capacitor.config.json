@@ -1,0 +1,13 @@
+{
+  "appId": "com.kindrichman.hanjasansungbi",
+  "appName": "한자성어 별똥별",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  }
+}
